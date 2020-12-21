@@ -27,7 +27,8 @@ class RolesController extends Controller
      */
     public function create()
     {
-        //
+        $permissions = Permission::all();
+        return view('backend.pages.roles.create',compact('permissions'));
     }
 
     /**
@@ -38,7 +39,8 @@ class RolesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Role::create(['name'=> $request->role_name]);
+        return redirect()->back();
     }
 
     /**
