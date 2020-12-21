@@ -5,11 +5,11 @@
 @endsection
 
 @section('styles')
-    <!-- Start datatable css -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.jqueryui.min.css">
+   <style>
+       .form-check-label{
+           text-transform: capitalize;
+       }
+   </style>
 @endsection
 
 @section('admin-content')
@@ -40,7 +40,7 @@
                         <div class="card-body">
                             <h4 class="header-title"> Create New Role</h4>
                             @include('backend.layouts.partials.messages')
-                            
+
                             <form action="{{ route('roles.store') }}" method="POST">
                                 @csrf
                                 <div class="form-group">
@@ -49,12 +49,51 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="">Permissions</label>
-                                    @foreach ($permissions as $permission)
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="checkPermissionAll" value="1">
+                                        <label class="form-check-label" for="checkPermissionAll">All</label>
+                                    </div>
+                                    <hr>
+                                    @php
+                                        $i = 1;
+                                    @endphp
+                                    @foreach ($permission_groups as $group)
+                                        <div class="row">
+                                            <div class="col-3">
+                                                <div class="form-check">
+                                                    <input type="checkbox" class="form-check-input" name="permissions[]" id="{{ $i }}-Management" value="{{ $group->name }}" onclick="getpermissionsByGroup('role-{{ $i }}-management-checkbox',this)">
+                                                    <label class="form-check-label" for="checkPermission">{{ $group->name }}</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-9 role-{{ $i }}-management-checkbox">
+                                                @php
+                                                    $permissions = App\User::getpermissionsByGroupName($group->name);
+                                                    $j = 1;
+                                                @endphp
+                                                @foreach ($permissions as $permission)
+                                                    <div class="form-check">
+                                                        <input type="checkbox" class="form-check-input" name="permissions[]" id="checkPermission{{ $permission->id }}" value="{{ $permission->name }}">
+                                                        <label class="form-check-label" for="checkPermission{{ $permission->id }}">{{ $permission->name }}</label>
+                                                    </div>
+                                                   @php
+                                                        $j++;
+                                                   @endphp
+                                                @endforeach
+                                                <br>
+                                            </div>
+                                        </div>
+                                        @php
+                                             $i++;
+                                        @endphp
+                                    @endforeach
+
+                                    {{-- @foreach ($permissions as $permission)
                                         <div class="form-check">
-                                            <input type="checkbox" class="form-check-input" name="parmissions[]" id="checkPermission{{ $permission->id }}" value="{{ $permission->name }}">
+                                            <input type="checkbox" class="form-check-input" name="permissions[]" id="checkPermission{{ $permission->id }}" value="{{ $permission->name }}">
                                             <label class="form-check-label" for="checkPermission{{ $permission->id }}">{{ $permission->name }}</label>
                                         </div>
-                                    @endforeach
+                                    @endforeach --}}
                                 </div>
                                 <button type="submit" class="btn btn-primary mt-4 pr-4 pl-4">Submit</button>
                             </form>
@@ -68,6 +107,31 @@
 @endsection
 
 @section('scripts')
-    <script>
+    <script type="text/javascript">
+
+        $("#checkPermissionAll").click(function(){
+            if($(this).is(':checked')){
+                //checked all the checkbox
+                $('input[type = checkBox]').prop('checked',true);
+            }else{
+                //unChecked all the checkbox
+                $('input[type = checkBox]').prop('checked',false);
+            }
+        });
+
+        function getpermissionsByGroup(className,checkThis){
+            const groupIdName = $("#"+checkThis.id);
+            const classCheckBox = $('.'+className+' input');
+
+            if(groupIdName.is(':checked')){
+                classCheckBox.prop('checked',true);
+            }else{
+                classCheckBox.prop('checked',false);
+            }
+
+
+
+        }
+
     </script>
 @endsection
