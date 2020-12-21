@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Http\Request;
+use DB;
 
 class RolesController extends Controller
 {
@@ -39,7 +40,21 @@ class RolesController extends Controller
      */
     public function store(Request $request)
     {
-        Role::create(['name'=> $request->role_name]);
+
+        $request->validate([
+            'name' => 'required|max:100|unique:roles'
+        ],[
+            'name.required' => 'Please Give a Role Name'
+        ]);
+        $roles = Role::create(['name'=> $request->name]);
+
+        // $roles = DB::table('roles')->where('name',$request->name)->first();
+
+        $permissions = $request->input('permissions');
+        if(!empty($permissions)){
+            $roles->syncPermissions($permissions);
+        }
+
         return redirect()->back();
     }
 

@@ -39,17 +39,23 @@
                     <div class="card">
                         <div class="card-body">
                             <h4 class="header-title"> Create New Role</h4>
+                            @include('backend.layouts.partials.messages')
+                            
                             <form action="{{ route('roles.store') }}" method="POST">
                                 @csrf
                                 <div class="form-group">
                                     <label for="">Role Name</label>
-                                    <input type="text" class="form-control" id="" name="role_name" aria-describedby="emailHelp" placeholder="Enter Role Name">
+                                    <input type="text" class="form-control" id="" name="name" aria-describedby="emailHelp" placeholder="Enter Role Name">
                                 </div>
-
-                                {{-- <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                    <label class="form-check-label" for="exampleCheck1">Check me out</label>
-                                </div> --}}
+                                <div class="form-group">
+                                    <label for="">Permissions</label>
+                                    @foreach ($permissions as $permission)
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" name="parmissions[]" id="checkPermission{{ $permission->id }}" value="{{ $permission->name }}">
+                                            <label class="form-check-label" for="checkPermission{{ $permission->id }}">{{ $permission->name }}</label>
+                                        </div>
+                                    @endforeach
+                                </div>
                                 <button type="submit" class="btn btn-primary mt-4 pr-4 pl-4">Submit</button>
                             </form>
                         </div>
